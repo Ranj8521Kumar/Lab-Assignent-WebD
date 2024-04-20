@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 1</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body{
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            color: white;
+        }
+        table {
+            border-collapse: collapse;
+          }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+          }
+    </style>
+</head>
+<body>
+    <table id="myTable">
+        <thead>
+          <tr>
+            <th>Row Number</th>
+            <th>Sum</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>1</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <button onclick="addRow()">Add Row</button>
+      
+      <script>
+      function addRow() {
+        var table = document.getElementById("myTable");
+        var rowCount = table.rows.length;
+        var lastRow = table.rows[rowCount - 1];
+        var prevRow = table.rows[rowCount - 2];
+        var newRow = table.insertRow(rowCount);
+      
+        var cell1 = newRow.insertCell(0);
+        var cell2 = newRow.insertCell(1);
+      
+        cell1.innerText = rowCount;
+        cell2.innerText = parseInt(lastRow.cells[1].innerText) + parseInt(prevRow.cells[1].innerText);
+      }
+      </script>
+</body>
+</html>

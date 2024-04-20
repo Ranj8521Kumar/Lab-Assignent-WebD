@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Locate the user</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.css" type="text/css">
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 80%; }
+        #sidebar { position: absolute; bottom: 0; right: 0; width: 20%; background-color: #f1f1f1; padding: 10px; box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); }
+        #geolocate { position: absolute; top: 10px; right: 10px; z-index: 1; }
+        #geocoder { position: absolute; top: 70px; left: 10px; z-index: 1; width: 200px; }
+        #customLocation { margin-top: 10px; }
+        .mapboxgl-popup {
+            max-width: 400px;
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            background-color: red;
+        }
+        .custom-marker {
+            background-image: url('marker.png');
+            background-size: cover;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+        .mapboxgl-popup-content {
+            padding: 10px;
+        }
+        .mapboxgl-popup-content h3 {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="sidebar">
+        <h2>Camera Counts</h2>
+        <p>Public Cameras: <span id="publicCount">0</span></p>
+        <p>Private Cameras: <span id="privateCount">0</span></p>
+        <hr>
+        <h2>Count Within Radius</h2>
+        <button onclick="startRadiusCount()">Select Location</button>
+        <p>Public Cameras: <span id="publicCountRadius">0</span></p>
+        <p>Private Cameras: <span id="privateCountRadius">0</span></p>
+        <hr>
+        <h2>Custom Location</h2>
+        <select id="customLocationSelect"></select>
+        <label>Radius (km): <input type="number" id="customRadiusInput" value="5"></label>
+        <button onclick="countWithinRadiusCustom()">Count</button>
+        <p>Public Cameras: <span id="publicCountRadiusCustom">0</span></p>
+        <p>Private Cameras: <span id="privateCountRadiusCustom">0</span></p>
+    </div>
+    <div id="geolocate" class="geolocate"></div>
+    <div id="geocoder" class="geocoder"></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiaGFycnlvcDk3NTIiLCJhIjoiY2xyOWFqZWR4MDB1eDJxcXkxdGZ2cHgxNCJ9.k7wHPckKD9rSF705bdp72Q';
+
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v12',
+            center: [78.9629 ,20.5937],
+            zoom: 4
+        });
+
+        // Add zoom and rotation controls to the map.
+        map.addControl(new mapboxgl.NavigationControl());
+
+        // Add geolocate control to the map.
+        const geolocate = new mapboxgl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true
+            },
+            trackUserLocation: true,
+            showUserHeading: true
+        });
+
+        map.addControl(geolocate);
+
+        // Add search bar (geocoder) to the map
+        const geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl,
+            placeholder: 'Search',
+            container: 'geocoder'
+        });
+
+        // Add directions control to the map
+        const directions = new MapboxDirections({
+            accessToken: mapboxgl.accessToken,
+            unit: 'metric', // Use metric system
+            profile: 'mapbox/driving', // Include driving directions
+            controls: {
+                instructions: false, // Hide step-by-step instructions
+            },
+        });
+
+        map.addControl(directions, 'top-left');
+
+        // Set the starting point as the user's live location
+        geolocate.on('geolocate', (e) => {
+            const { longitude, latitude } = e.coords;
+            directions.setOrigin([longitude, latitude]);
+        });
+
+        // Fetch markers data from JSON file
+        fetch('markers.json')
+            .then(response => response.json())
+            .then(data => {
+                // Add markers and paths to the map
+                data.markers.forEach(marker => {
+                    const coordinates = marker.geometry.coordinates;
+                    const properties = marker.properties;
+
+                    // Add marker
+                    const newMarker = new mapboxgl.Marker({ color: 'red' })
+                        .setLngLat(coordinates)
+                        .addTo(map)
+                        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${properties.name}</h3>${properties.description}`));
+
+                    // Add an event listener to the marker for click events
+                    newMarker.getElement().addEventListener('click', () => {
+                        map.flyTo({
+                            center: newMarker.getLngLat(),
+                            essential: true // this animation is considered essential with respect to prefers-reduced-motion
+                        });
+                    });
+
+                    // Add an event listener for marker hover effect
+                    newMarker.getElement().addEventListener('mouseenter', () => {
+                        newMarker.togglePopup();
+                    });
+
+                    newMarker.getElement().addEventListener('mouseleave', () => {
+                        newMarker.togglePopup();
+                    });
+
+                    // Add path
+                    if (properties.path && properties.path.length > 1) {
+                        const pathCoordinates = properties.path.map(coord => ({
+                            type: 'Point',
+                            coordinates: coord
+                        }));
+
+                        map.addSource(`path-${properties.name}`, {
+                            type: 'geojson',
+                            data: {
+                                type: 'FeatureCollection',
+                                features: pathCoordinates
+                            }
+                        });
+
+                        map.addLayer({
+                            id: `path-${properties.name}`,
+                            type: 'line',
+                            source: `path-${properties.name}`,
+                            layout: {
+                                'line-join': 'round',
+                                'line-cap': 'round'
+                            },
+                            paint: {
+                                'line-color': 'blue',
+                                'line-width': 3
+                            }
+                        });
+                    }
+
+                    // Add custom location option
+                    const customLocationSelect = document.getElementById('customLocationSelect');
+                    const option = document.createElement('option');
+                    option.value = marker.id;
+                    option.text = properties.name;
+                    customLocationSelect.appendChild(option);
+                });
+
+                // Update camera counts
+                updateCameraCounts(data.markers);
+            })
+            .catch(error => console.error('Error fetching markers data:', error));
+
+        // function createCustomMarker(type) {
+        //     const marker = document.createElement('div');
+        //     marker.className = 'custom-marker';
+        //     marker.style.backgroundImage = type === 'Private' ? "url('red_marker.png')" : "url('blue_marker.png')";
+        //     return marker;
+        // }
+
+        function updateCameraCounts(markers) {
+            const publicCountElement = document.getElementById('publicCount');
+            const privateCountElement = document.getElementById('privateCount');
+
+            let publicCount = 0;
+            let privateCount = 0;
+
+            markers.forEach(marker => {
+                if (marker.properties.type === 'Public') {
+                    publicCount++;
+                } else if (marker.properties.type === 'Private') {
+                    privateCount++;
+                }
+            });
+
+            publicCountElement.textContent = publicCount;
+            privateCountElement.textContent = privateCount;
+        }
+
+        function startRadiusCount() {
+            map.once('click', (e) => {
+                const radiusInput = document.getElementById('customRadiusInput');
+                const radius = parseFloat(radiusInput.value);
+
+                const userLngLat = e.lngLat;
+
+                const publicCountRadiusElement = document.getElementById('publicCountRadius');
+                const privateCountRadiusElement = document.getElementById('privateCountRadius');
+
+                let publicCountRadius = 0;
+                let privateCountRadius = 0;
+
+                map.getSource().features.forEach(feature => {
+                    const distance = mapboxgl.MercatorCoordinate.fromLngLat(feature.geometry.coordinates)
+                        .distanceTo(mapboxgl.MercatorCoordinate.fromLngLat(userLngLat)) / 1000; // Convert meters to kilometers
+
+                    if (distance <= radius) {
+                        if (feature.properties.type === 'Public') {
+                            publicCountRadius++;
+                        } else if (feature.properties.type === 'Private') {
+                            privateCountRadius++;
+                        }
+                    }
+                });
+
+                publicCountRadiusElement.textContent = publicCountRadius;
+                privateCountRadiusElement.textContent = privateCountRadius;
+            });
+        }
+
+        function countWithinRadiusCustom() {
+            const radiusInput = document.getElementById('customRadiusInput');
+            const radius = parseFloat(radiusInput.value);
+
+            const customLocationSelect = document.getElementById('customLocationSelect');
+            const selectedOption = customLocationSelect.options[customLocationSelect.selectedIndex];
+            const selectedMarkerId = selectedOption.value;
+
+            const selectedMarker = map.getSource().features.find(feature => feature.id === selectedMarkerId);
+
+            if (!selectedMarker) {
+                console.error('Selected marker not found');
+                return;
+            }
+
+            const customLocation = selectedMarker.geometry.coordinates;
+
+            const publicCountRadiusCustomElement = document.getElementById('publicCountRadiusCustom');
+            const privateCountRadiusCustomElement = document.getElementById('privateCountRadiusCustom');
+
+            let publicCountRadiusCustom = 0;
+            let privateCountRadiusCustom = 0;
+
+            map.getSource().features.forEach(feature => {
+                const distance = mapboxgl.MercatorCoordinate.fromLngLat(feature.geometry.coordinates)
+                    .distanceTo(mapboxgl.MercatorCoordinate.fromLngLat(customLocation)) / 1000; // Convert meters to kilometers
+
+                if (distance <= radius) {
+                    if (feature.properties.type === 'Public') {
+                        publicCountRadiusCustom++;
+                    } else if (feature.properties.type === 'Private') {
+              
+          privateCountRadiusCustom++;
+                    }
+                }
+            });
+
+            publicCountRadiusCustomElement.textContent = publicCountRadiusCustom;
+            privateCountRadiusCustomElement.textContent = privateCountRadiusCustom;
+        }
+    </script>
+</body>
+
+</html>

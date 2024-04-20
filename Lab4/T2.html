@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 2</title>
+
+    <style>
+        body{
+            text-align: center;
+        }
+
+        .text{
+            color: blue;
+        }
+
+        .button{
+            color: rgb(255, 0, 136);
+            background-color: aqua;
+            border: 2px solid black;
+            width: 120px;
+            height: 25px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="items">
+            <h1 class="text">This is a Submit Button</h1>
+            <button class="button" onclick="onClick()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+
+        function onClick(){
+document.body.style.backgroundColor="lightgreen";
+
+            document.getElementsByClassName("text")[0].style.color="Red";
+
+            document.getElementsByClassName("text")[0].style.fontSize="48px";
+
+            document.getElementsByClassName("text")[0].innerHTML="This is the New Heading";
+
+        var newButtonElement=document.createElement("button");
+        newButtonElement.textContent="Click Me";
+        document.getElementsByClassName("text")[0].insertAdjacentElement('afterend', newButtonElement);
+
+        newButtonElement.style.backgroundColor="black";
+        newButtonElement.style.color="White";
+        newButtonElement.style.borderRadius="5px"
+        }
+    </script>
+</body>
+</html>

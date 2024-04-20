@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task 1</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: black;
+        color: white;
+        flex-direction: column;
+      }
+
+      .word {
+        font-size: 24px;
+        transition: transform 0.5s ease;
+      }
+
+      .input{
+        height: 25px;
+        border-radius: 10px;
+      }
+
+      .button{
+        height: 25px;
+        border-radius:
+     10px;
+     padding: 5px;
+     text-align: center;
+     background-color: green;
+     color: white;
+      }
+
+      .container{
+        margin-top: 30px;
+      }
+
+      @keyframes spin{
+        0%{
+            rotate: 0deg;
+        }
+        100%{
+            rotate: 360deg;
+        }
+      }
+
+      .word{
+        animation: spin 2s linear infinite;
+        transform-origin: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h2 class="word">Hello</h2>
+    <div class="container">
+      <input type="text" class="input" />
+      <button class="button" onclick="changeWord()">Change Word</button>
+    </div>
+
+
+    <script>
+        function changeWord(){
+            var input=document.getElementsByClassName('input')[0];
+            var word=document.getElementsByClassName('word')[0];
+            word.innerHTML=input.value;
+
+        }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 2</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body{
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            color: white;
+        }
+
+        #count {
+            font-size: 16px;
+            transition: font-size 0.3s ease;
+            padding: 20px;
+            
+        }
+    </style>
+</head>
+<body>
+    <p id="count">0</p>
+<button onclick="incrementCount()">Increment</button>
+
+<script>
+  var count = 0;
+  var countElement = document.getElementById("count");
+
+  function incrementCount() {
+    count++;
+    countElement.textContent = count;
+    updateFontSize();
+  }
+
+  function updateFontSize() {
+    // Adjust font size based on count
+    countElement.style.fontSize = (16 + count * 2) + "px";
+  }
+</script>
+</body>
+</html>

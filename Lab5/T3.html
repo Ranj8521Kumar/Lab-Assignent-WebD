@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 3</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body{
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            color: white;
+        }
+
+        #countList {
+            font-size: 16px;
+          }
+    </style>
+</head>
+<body>
+    
+<ul id="countList">
+  </ul>
+  <button onclick="incrementCount()">Increment</button>
+  
+  <script>
+    var count = 0;
+    var countList = document.getElementById("countList");
+  
+    function incrementCount() {
+      count++;
+      var newItem = document.createElement("li");
+      newItem.textContent = count;
+      updateFontSize(newItem);
+      countList.appendChild(newItem);
+    }
+  
+    function updateFontSize(item) {
+      item.style.fontSize = (16 + count * 2) + "px";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task 4</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+    header {
+        background-color: #333;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+    nav {
+        background-color: #444;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+    main {
+        padding: 20px;
+    }
+    .content {
+        background-color: #f2f2f2;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .button-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    button {
+        padding: 10px 20px;
+        background-color: #333;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 15px;
+    }
+    .alternate-content {
+        background-color: #3a08df;
+        color: #0d0d0e;
+        padding: 20px;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Header</h1>
+</header>
+
+<main>
+    <div class="content">
+        <h2>Main Section Content</h2>
+        <p>This is the original content of the main section.</p>
+    </div>
+    
+    <div class="button-container">
+        <button onclick="replaceContent()">Replace Content</button>
+    </div>
+</main>
+
+<script>
+    function replaceContent() {
+        var mainContent = document.querySelector('main .content');
+        var newContent = document.createElement('div');
+        newContent.classList.add('content', 'alternate-content');
+        newContent.innerHTML = '<h2>Alternate Content</h2><p>This is the content with different styles.</p>';
+        mainContent.parentNode.replaceChild(newContent, mainContent);
+    }
+</script>
+
+</body>
+</html>

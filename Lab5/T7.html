@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task 7</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 50px auto;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    #tipAmount {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Tip Calculator</h2>
+
+    <label for="billAmount">Bill Amount: $<span id="billAmountValue">10</span></label>
+    <input type="range" min="0" max="100" value="10" id="billAmount">
+
+    <label for="tipPercentage">Tip Percentage: <span id="tipPercentageValue">10</span>%</label>
+    <input type="range" min="0" max="100" value="10" id="tipPercentage">
+
+    <label for="numberOfPeople">Number of People: <span id="numberOfPeopleValue">1</span></label>
+    <input type="range" min="1" max="10" value="1" id="numberOfPeople">
+
+    <button onclick="calculateTip()">Calculate Tip</button>
+
+    <div id="tipAmount"></div>
+  </div>
+
+  <script>
+    function calculateTip() {
+      const billAmount = document.getElementById('billAmount').value;
+      const tipPercentage = document.getElementById('tipPercentage').value;
+      const numberOfPeople = document.getElementById('numberOfPeople').value;
+
+      const tipAmount = (billAmount * tipPercentage) / 100 / numberOfPeople;
+
+      document.getElementById('tipAmount').textContent = `Tip Amount per Person: $${tipAmount.toFixed(2)}`;
+    }
+
+    // Update range input values
+    const billAmountInput = document.getElementById('billAmount');
+    const tipPercentageInput = document.getElementById('tipPercentage');
+    const numberOfPeopleInput = document.getElementById('numberOfPeople');
+
+    billAmountInput.addEventListener('input', function() {
+      document.getElementById('billAmountValue').textContent = this.value;
+    });
+
+    tipPercentageInput.addEventListener('input', function() {
+      document.getElementById('tipPercentageValue').textContent = this.value;
+    });
+
+    numberOfPeopleInput.addEventListener('input', function() {
+      document.getElementById('numberOfPeopleValue').textContent = this.value;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 1</title>
+
+    <style>
+        .container{
+            text-align: center;
+        }
+
+        .text{
+            color: blue;
+        }
+
+        .button{
+            color: rgb(255, 0, 136);
+            background-color: aqua;
+            border: 2px solid black;
+            width: 120px;
+            height: 25px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="items">
+            <h1 class="text">This is a Submit Button</h1>
+            <button class="button" onclick="onClick()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        function onClick(){
+            let text = document.getElementsByClassName("text")[0];
+            text.style.color="green";
+
+            let button=document.getElementsByClassName("button")[0];
+            button.style.backgroundColor="black";
+            button.style.color="white";
+        }
+    </script>
+</body>
+</html>

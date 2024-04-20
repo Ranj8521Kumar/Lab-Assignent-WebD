@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .card-container {
+            width: 200px; 
+            height: 300px; 
+            position: relative;
+            perspective: 1000px; 
+          }
+          
+          .card {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: spin 5s linear infinite;
+          }
+          
+          @keyframes spin {
+            from {
+              transform: rotateY(0deg);
+            }
+            to {
+              transform: rotateY(360deg);
+            }
+          }
+          
+    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task 6</title>
+</head>
+<body>
+  <div class="card-container">
+    <img src="playing card.png" alt="Playing Card" class="card">
+  </div>
+</body>
+</html>
